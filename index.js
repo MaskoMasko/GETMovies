@@ -4,12 +4,14 @@ import admin from "firebase-admin";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 dotenv.config();
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(cors({ origin: 'http://localhost:5173' }));
 
 if(!process.env.FIREBASE_SECRET_KEY) {
   console.error("FIREBASE_SECRET_KEY is not set in the environment variables. Possibly missing .env file");
@@ -63,10 +65,6 @@ app.post("/login", async (req, res) => {
 app.post("/logout", (req, res) => {
   res.clearCookie('token');
   res.json({ message: "Logged out successfully" });
-});
-
-app.get("/protected", authenticate, (req, res) => {
-  res.json({ message: "This is a protected route", user: req.user });
 });
 
 app.get("/movies", authenticate, async (req, res) => {
